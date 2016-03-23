@@ -1,0 +1,304 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="bootsrap.min.css"/>
+        <style>
+            .header {
+              background-color: #141B4C;
+              width: 100%;
+              height: 80px;
+              padding: 22px;
+            }
+            .heading {
+              color: white;
+              font: 30px solid;
+            }
+            #player2Turns {
+              display: none;
+              color: #569598;
+            }
+            #player1Turns {
+              display: none;
+              color: #98565E;
+            }
+            .playerTurn {
+              font-size: 16px;
+              color: #d9534f;
+              margin-top: 25px;
+            }
+            .playground {
+              margin-top: 50px;
+            }
+            .cube {
+              border: 1px solid grey;
+              width: 44px;
+              height: 44px;
+            }
+            .scoreBoard {
+              margin-top: 20px;
+            }
+            #player1Wins {
+              display: none;
+            }
+            #player1Wins {
+              display: none;
+            }
+            #winnerAnnouncementModal {
+              position: fixed;
+              display: none;
+              border: 2px solid grey;
+              left: 45%;
+              top: 45%;
+              width: 280px;
+              height: 120px;
+              z-index: 100000;
+              padding: 25px;
+              background-color: #8ECC8E;
+            }
+            .selectHandleButton {
+              margin: 15px;
+            }
+        </style>
+        <script>
+            (function(window) {
+                window.ticTacToeModule = {};
+              window.ticTacToeModule.playerTurnCount = 1;
+              window.ticTacToeModule.playersScore = {
+                player1: 0,
+                player2: 0
+              };
+              window.ticTacToeModule.playerInfo = {
+                player1: {
+                    color: "#98565E",
+                  Name: "Player1"
+                },
+                player2: {
+                    color: "#569598",
+                  Name: "Player2"
+                }
+              }
+              window.ticTacToeModule.closeWinnerAnnoncementModel = function() {
+                document.getElementById("winnerAnnouncementModal").style.display = "none";
+              }
+              window.ticTacToeModule.updateScoreBoard = function(winner) {
+                if(winner === '1') {
+                  window.ticTacToeModule.playersScore.player1 += 1;
+                  document.getElementById("player1Score").innerHTML = window.ticTacToeModule.playersScore.player1;
+                } else {
+                  window.ticTacToeModule.playersScore.player2 += 1;
+                  document.getElementById("player2Score").innerHTML = window.ticTacToeModule.playersScore.player2;
+                }
+              }
+              window.ticTacToeModule.resetGame = function(winner) {
+                if(winner !== '0') {
+                    window.ticTacToeModule.updateScoreBoard(winner)
+                }
+                document.getElementById("player1Turns").style.display = "none";
+                document.getElementById("player2Turns").style.display = "none";
+                window.ticTacToeModule.playerTurnCount = 1;
+                var cubes = document.getElementsByClassName("cube");
+                for(var i = 0; i< cubes.length; i++){
+                    cubes[i].style.backgroundColor = "white";
+                  cubes[i].style.borderColor = "grey";
+                  cubes[i].removeEventListener("click", window.ticTacToeModule.setSymbol);
+                }
+              }
+              window.ticTacToeModule.checkRules = function(id) {
+                var cubeObject = {
+                    leftupper: document.getElementById("left_upper").style.backgroundColor,
+                  centreupper: document.getElementById("centre_upper").style.backgroundColor,
+                  rightupper: document.getElementById("right_upper").style.backgroundColor,
+                  leftmiddle: document.getElementById("left_middle").style.backgroundColor,
+                  centremiddle: document.getElementById("centre_middle").style.backgroundColor,
+                  rightmiddle: document.getElementById("right_middle").style.backgroundColor,
+                  leftlower: document.getElementById("left_lower").style.backgroundColor,
+                  centrelower: document.getElementById("centre_lower").style.backgroundColor,
+                  rightlower: document.getElementById("right_lower").style.backgroundColor
+                };
+                var rules = {
+                    left_upper: function() {
+                    if((cubeObject.leftupper === cubeObject.centreupper && cubeObject.leftupper === cubeObject.rightupper) || (cubeObject.leftupper === cubeObject.leftmiddle && cubeObject.leftupper === cubeObject.leftlower) || (cubeObject.leftupper === cubeObject.centremiddle && cubeObject.leftupper === cubeObject.rightlower)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  centre_upper: function() {
+                    if((cubeObject.centreupper === cubeObject.leftupper && cubeObject.centreupper === cubeObject.rightupper) || (cubeObject.centreupper === cubeObject.centremiddle && cubeObject.centreupper === cubeObject.centrelower)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  right_upper: function() {
+                    if((cubeObject.rightupper === cubeObject.leftupper && cubeObject.rightupper === cubeObject.centreupper) || (cubeObject.rightupper === cubeObject.rightmiddle && cubeObject.rightupper === cubeObject.rightlower) || (cubeObject.rightupper === cubeObject.centremiddle && cubeObject.rightupper === cubeObject.leftlower)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  left_middle: function() {
+                    if((cubeObject.leftmiddle === cubeObject.leftupper && cubeObject.leftmiddle === cubeObject.leftlower) || (cubeObject.leftmiddle === cubeObject.centremiddle && cubeObject.leftmiddle === cubeObject.rightmiddle)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  centre_middle: function() {
+                    if((cubeObject.centremiddle === cubeObject.leftupper && cubeObject.centremiddle === cubeObject.rightlower) || (cubeObject.centremiddle === cubeObject.rightupper && cubeObject.centremiddle === cubeObject.leftlower) || (cubeObject.centremiddle === cubeObject.centreupper && cubeObject.centremiddle === cubeObject.centrelower) || (cubeObject.centremiddle === cubeObject.leftmiddle && cubeObject.centremiddle === cubeObject.rightmiddle)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  right_middle: function() {
+                    if((cubeObject.rightmiddle === cubeObject.centremiddle && cubeObject.rightmiddle === cubeObject.leftmiddle) || (cubeObject.rightmiddle === cubeObject.rightupper && cubeObject.rightmiddle === cubeObject.rightlower)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  left_lower: function() {
+                    if((cubeObject.leftlower === cubeObject.leftupper && cubeObject.leftlower === cubeObject.leftmiddle) || (cubeObject.leftlower === cubeObject.centrelower && cubeObject.leftlower === cubeObject.rightlower) || (cubeObject.leftlower === cubeObject.centremiddle && cubeObject.leftlower === cubeObject.rightupper)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  centre_lower: function() {
+                    if((cubeObject.centrelower === cubeObject.leftlower && cubeObject.centrelower === cubeObject.rightlower) || (cubeObject.centrelower === cubeObject.centremiddle && cubeObject.centrelower === cubeObject.centreupper)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  },
+                  right_lower: function() {
+                    if((cubeObject.rightlower === cubeObject.centrelower && cubeObject.rightlower === cubeObject.leftlower) || (cubeObject.rightlower === cubeObject.leftupper && cubeObject.rightlower === cubeObject.centremiddle) || (cubeObject.rightlower === cubeObject.rightupper && cubeObject.rightlower === cubeObject.rightmiddle)){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                  }
+                }
+                return rules[id]();
+              }
+              window.ticTacToeModule.setSymbol = function(e) {
+                var gameResult = false;
+                if(window.ticTacToeModule.playerTurnCount % 2 !== 0 || 		window.ticTacToeModule.playerTurnCount === 1){
+                  e.target.style.backgroundColor = window.ticTacToeModule.playerInfo.player1.color;
+                  document.getElementById("player1Turns").style.display = "none";
+                  document.getElementById("player2Turns").style.display = "block";
+                  gameResult = window.ticTacToeModule.checkRules(e.target.id);
+                  if(gameResult === true) {
+                    document.getElementById("winnerAnnouncementModal").style.display = "block";
+                    document.getElementById("player1Wins").style.display = "block";
+                    document.getElementById("player2Wins").style.display = "none";
+                    document.getElementById("nooneWins").style.display = "none";
+                    window.ticTacToeModule.resetGame("1");
+                  }
+                } else {
+                  e.target.style.backgroundColor = window.ticTacToeModule.playerInfo.player2.color;
+                  document.getElementById("player2Turns").style.display = "none";
+                  document.getElementById("player1Turns").style.display = "block";
+                  gameResult = window.ticTacToeModule.checkRules(e.target.id);
+                  if(gameResult === true) {
+                    document.getElementById("winnerAnnouncementModal").style.display = "block";
+                    document.getElementById("player2Wins").style.display = "block";
+                    document.getElementById("player1Wins").style.display = "none";
+                    document.getElementById("nooneWins").style.display = "none";
+                    window.ticTacToeModule.resetGame("2");
+                  }
+                }
+                window.ticTacToeModule.playerTurnCount++;
+                if(window.ticTacToeModule.playerTurnCount === 10) {
+                    document.getElementById("winnerAnnouncementModal").style.display = "block";
+                  document.getElementById("player2Wins").style.display = "none";
+                  document.getElementById("player1Wins").style.display = "none";
+                  document.getElementById("nooneWins").style.display = "block";
+                    window.ticTacToeModule.resetGame("0");
+                }
+                e.target.removeEventListener(e.type, arguments.callee);
+              }
+              window.ticTacToeModule.setHandle = function() {
+                window.ticTacToeModule.resetGame("0");
+                var cubes = document.getElementsByClassName("cube");
+                for(var i = 0; i< cubes.length; i++){
+                    cubes[i].style.borderColor = "#141B4C";
+                  (function(i){
+                    cubes[i].addEventListener("click", window.ticTacToeModule.setSymbol, false)
+                  })(i)
+                }
+                document.getElementById("player1Turns").style.display = "block";
+              };
+              return window.ticTacToeModule;
+            })(window ? window : {});
+        </script>
+    </head>
+    <body>
+        <div class="row">
+          <div class="header">
+            <span class="heading">Tic Tac Toe</span>
+            <button type="button" value="New Game" onclick="ticTacToeModule.setHandle()" class="btn btn-danger pull-right">
+              Start Game
+            </button>
+          </div>
+        </div>
+
+        <div id="winnerAnnouncementModal">
+          <h4 id="player1Wins">Player 1 Wins... </h4>
+          <h4 id="player2Wins">Player 2 Wins... </h4>
+          <h4 id="nooneWins">Noone Wins... :/</h4>
+          <button type="button" class="btn btn-primay" onclick="ticTacToeModule.closeWinnerAnnoncementModel()" value="Close">Close</button>
+        </div>
+
+        <div class="row playground">
+          <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+              <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                <div class="col-xs-2"></div>
+                <div class="col-xs-3 cube" id="left_upper"></div>
+                <div class="col-xs-3 cube" id="centre_upper"></div>
+                <div class="col-xs-3 cube" id="right_upper"></div>
+                <div class="col-xs-1"></div>
+              </div>
+              <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                <div class="col-xs-2"></div>
+                <div class="col-xs-3 cube" id="left_middle"></div>
+                <div class="col-xs-3 cube" id="centre_middle"></div>
+                <div class="col-xs-3 cube" id="right_middle"></div>
+                <div class="col-xs-1"></div>
+              </div>
+              <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                <div class="col-xs-2"></div>
+                <div class="col-xs-3 cube" id="left_lower"></div>
+                <div class="col-xs-3 cube" id="centre_lower"></div>
+                <div class="col-xs-3 cube" id="right_lower"></div>
+                <div class="col-xs-1"></div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+              <div class="scoreBoard">
+                <table class="table table-bordered">
+                  <thead><tr class="info"><th>Player 1</th><th>Player 2</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td id="player1Score">0</td>
+                      <td id="player2Score">0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="col-xs-2"></div>
+            <div class="col-xs-10">
+              <p class="playerTurn" id="player1Turns">PLAYER1's TURN</p>
+              <p class="playerTurn" id="player2Turns">PLAYER2's TURN</p>
+            </div>
+          </div>
+        </div>
+    </body>
+</html>
